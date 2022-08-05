@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Action\NotFoundAction;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\GoodsOrderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -14,7 +15,14 @@ use Doctrine\ORM\Mapping as ORM;
         "get",
         "post"
     ],
-    itemOperations: [],
+    itemOperations: [
+        'get' => [
+            'method' => 'GET',
+            'read' => true,
+            'output' => false,
+            'controller' => NotFoundAction::class,
+        ],
+    ],
 )]
 class GoodsOrder
 {
@@ -23,7 +31,7 @@ class GoodsOrder
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToMany(targetEntity: goods::class, inversedBy: 'goodsOrders')]
+    #[ORM\ManyToMany(targetEntity: Goods::class, inversedBy: 'goodsOrders')]
     private Collection $goods;
 
     public function __construct()
@@ -37,7 +45,7 @@ class GoodsOrder
     }
 
     /**
-     * @return Collection<int, goods>
+     * @return Collection<int, Goods>
      */
     public function getGoods(): Collection
     {

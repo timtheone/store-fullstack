@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Action\NotFoundAction;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
@@ -12,10 +13,18 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GoodsRepository::class)]
 #[
-    ApiResource(collectionOperations: [
+    ApiResource(
+        collectionOperations: [
         "get",
-    ],
-        itemOperations: [],
+        ],
+        itemOperations: [
+            'get' => [
+                'method' => 'GET',
+                'read' => true,
+                'output' => false,
+                'controller' => NotFoundAction::class,
+            ],
+        ],
         attributes: ["pagination_enabled" => false]),
     ApiFilter(SearchFilter::class, properties: [
         'catalog.name' => 'exact'
@@ -42,11 +51,11 @@ class Goods
 
     #[ORM\ManyToOne(inversedBy: 'goods')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?catalog $catalog = null;
+    private ?Catalog $catalog = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?measure $measure = null;
+    private ?Measure $measure = null;
 
     #[ORM\ManyToMany(targetEntity: GoodsOrder::class, mappedBy: 'goods')]
     private Collection $goodsOrders;
