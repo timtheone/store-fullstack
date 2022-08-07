@@ -8,4 +8,5 @@
 /public/bundles/
 /var/
 /vendor/
+/swagger_docs.json
 ###< symfony/framework-bundle ###
