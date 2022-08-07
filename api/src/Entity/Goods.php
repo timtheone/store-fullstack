@@ -10,12 +10,13 @@ use App\Repository\GoodsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: GoodsRepository::class)]
 #[
     ApiResource(
         collectionOperations: [
-        "get",
+            "get",
         ],
         itemOperations: [
             'get' => [
@@ -25,39 +26,48 @@ use Doctrine\ORM\Mapping as ORM;
                 'controller' => NotFoundAction::class,
             ],
         ],
-        attributes: ["pagination_enabled" => false]),
+        attributes: ["pagination_enabled" => false],
+        normalizationContext: ['groups' => ['goods']]
+    ),
     ApiFilter(SearchFilter::class, properties: [
-        'catalog.name' => 'exact'
+        'catalog.id' => 'exact'
     ])
- ]
+]
 class Goods
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["goods", 'goodsOrders'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["goods", 'goodsOrders'])]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Groups("goods")]
     private ?bool $hidden = null;
 
     #[ORM\Column]
+    #[Groups(["goods", 'goodsOrders'])]
     private ?float $quantity = null;
 
     #[ORM\Column]
+    #[Groups(["goods", 'goodsOrders'])]
     private ?float $regprice = null;
 
-    #[ORM\ManyToOne(inversedBy: 'goods')]
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Catalog $catalog = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(["goods", 'goodsOrders'])]
     private ?Measure $measure = null;
 
     #[ORM\ManyToMany(targetEntity: GoodsOrder::class, mappedBy: 'goods')]
+    #[Groups("goods")]
     private Collection $goodsOrders;
 
     public function __construct()

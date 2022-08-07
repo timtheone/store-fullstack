@@ -2,9 +2,9 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\MeasureRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: MeasureRepository::class)]
 class Measure
@@ -15,6 +15,7 @@ class Measure
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["goods", 'goodsOrders'])]
     private ?string $name = null;
 
     public function getId(): ?int

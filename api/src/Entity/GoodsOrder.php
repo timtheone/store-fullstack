@@ -8,6 +8,7 @@ use App\Repository\GoodsOrderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: GoodsOrderRepository::class)]
 #[ApiResource(
@@ -23,16 +24,24 @@ use Doctrine\ORM\Mapping as ORM;
             'controller' => NotFoundAction::class,
         ],
     ],
+    attributes: ["pagination_enabled" => false],
+    normalizationContext: ['groups' => ['goodsOrders']]
 )]
 class GoodsOrder
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['goodsOrders'])]
     private ?int $id = null;
 
+    #[Groups(['goodsOrders'])]
     #[ORM\ManyToMany(targetEntity: Goods::class, inversedBy: 'goodsOrders')]
     private Collection $goods;
+
+    #[ORM\Column]
+    #[Groups(['goodsOrders'])]
+    private ?int $quantity = null;
 
     public function __construct()
     {
@@ -43,6 +52,19 @@ class GoodsOrder
     {
         return $this->id;
     }
+
+    public function getQuantity(): ?int
+    {
+        return $this->quantity;
+    }
+
+    public function setQuantity(int $quantity): self
+    {
+        $this->quantity = $quantity;
+
+        return $this;
+    }
+
 
     /**
      * @return Collection<int, Goods>

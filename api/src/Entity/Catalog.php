@@ -2,11 +2,28 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Action\NotFoundAction;
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\CatalogRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 
 #[ORM\Entity(repositoryClass: CatalogRepository::class)]
+#[
+    ApiResource(
+        collectionOperations: [
+            "get",
+        ],
+        itemOperations: [
+            'get' => [
+                'method' => 'GET',
+                'read' => true,
+                'output' => false,
+                'controller' => NotFoundAction::class,
+            ],
+        ],
+        attributes: ["pagination_enabled" => false])
+]
 class Catalog
 {
     #[ORM\Id]
